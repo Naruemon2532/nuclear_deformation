@@ -148,7 +148,6 @@ for d= 1:e
                     xr_all = nonzeros(x_r);
                     xr_lead_forward = nonzeros(x_r(:,1))+1;
                     xr_lead_backward = nonzeros(x_r(:,1))-1;
-                    %xr_fol = nonzeros(x_r(:,2:Nr));
                     xr_fol_forward = nonzeros(x_r(:,2:Nr))+1;
                     xr_fol_backward = nonzeros(x_r(:,2:Nr))-1;
                 else
@@ -159,12 +158,7 @@ for d= 1:e
                     xr_lead=(xr_lead(~isnan(xr_lead)));
                     xr_lead_forward = xr_lead+1;
                     xr_lead_backward = xr_lead-1;
-                    %xr_lead_forward = nonzeros(x_r(:,1))+1;
-                    %xr_lead_backward = nonzeros(x_r(:,1))-1;
-                    %xr_fol = nonzeros(x_r(:,2:Nr));
                     xr_fol = differ(xr_all,xr_lead);
-                    % xr_fol_forward = nonzeros(x_r(:,2:Nr))+1;
-                    % xr_fol_backward = nonzeros(x_r(:,2:Nr))-1;
                     xr_fol_forward = xr_fol+1;
                     xr_fol_backward = xr_fol-1;
                 end
@@ -187,7 +181,6 @@ for d= 1:e
                     xl_all = nonzeros(x_l);
                     xl_lead_forward = nonzeros(x_l(:,1))-1;
                     xl_lead_backward = nonzeros(x_l(:,1))+1;
-                    %xl_fol = nonzeros(x_l(:,2:Nl));
                     xl_fol_forward = nonzeros(x_l(:,2:Nl))-1;
                     xl_fol_backward = nonzeros(x_l(:,2:Nl))+1;
                 else
@@ -198,10 +191,7 @@ for d= 1:e
                     xl_lead=(xl_lead(~isnan(xl_lead)));
                     xl_lead_forward = xl_lead-1;
                     xl_lead_backward = xl_lead+1;
-                    %xl_fol = nonzeros(x_l(:,2:Nl));
                     xl_fol = differ(xl_all,xl_lead);
-                    %xl_fol_forward = nonzeros(x_l(:,2:Nl))-1;
-                    %xl_fol_backward = nonzeros(x_l(:,2:Nl))+1;
                     xl_fol_forward = xl_fol-1;
                     xl_fol_backward = xl_fol+1;
                 end
@@ -274,29 +264,19 @@ for d= 1:e
                 
                 alpha(1,1) = (Nr*Nlane_r-sum(nr))*((M_r-sum(nr))/(M_r))*kon;  % N-n = number of unbound motors 
                 alpha(1,2) = sum(nr)*koff;   % n = number of bound motors
-                %Stepping
-                % if nr<Nr || nl<Nl
-                % alpha(1,3:6) = 0;
-                % else
                 alpha(1,3) = aa(1)*p1_r;    % leading motor's forward rate
                 alpha(1,4) = aa(2)*q1_r;    % leading motor's backward rate
                 alpha(1,5) = aa(3)*p;       % following motors' forward rate
                 alpha(1,6) = aa(4)*q;       % following motors' backward rate
-                % end
                 %Left team
                 %Binding
                
                 alpha(1,7) = (Nl*Nlane_l-sum(nl))*((M_l-sum(nl))/(M_l))*kon;  % N-n = number of unbound motors  
                 alpha(1,8) = sum(nl)*koff;   % n = number of bound motors
-                %Steppping
-                % if nl<Nl || nr<Nr
-                % alpha(1,9:12) = 0;   
-                % else
                 alpha(1,9) = aa(5)*p1_l;    % leading motor's forward rate
                 alpha(1,10) = aa(6)*q1_l;    % leading motor's backward rate
                 alpha(1,11) = aa(7)*p;       % following motors' forward rate
                 alpha(1,12) = aa(8)*q;       % following motors' backward rate
-                % end
                 alpha0 = sum(alpha);  % total rate
 
                 r1= rand(1); r2 = rand(1);   % generate two random number
@@ -364,7 +344,6 @@ for d= 1:e
                      bound_r(row(1),column(1)) =1;
                      x_r(row(1),column(1)) = xtobind;
                      nr(row(1)) = nr(row(1)) + 1;
-                 %    M_site =[M_site; abs(b-a)];
 
                          
 
@@ -374,7 +353,6 @@ for d= 1:e
                     [row, column] = find(bound_r == 1); % find the bound motor
 
                     if ~isempty(row)
-                       % x_del=x_r(row(1),column(1));
                         bound_r(row(1),column(1)) = 0;
                         x_r(row(1),column(1)) = 0;
                         nr(row(1)) = nr(row(1)) - 1;  % unbinding of right team
@@ -457,8 +435,7 @@ for d= 1:e
                      x_l(row(1),column(1)) = xtobind;
                      nl(row(1)) = nl(row(1)) + 1;
 
-                    
-                  %  M_site =[M_site; abs(b-a)];                 
+                                 
 
                 elseif r2 <= sum(alpha(1:8))/alpha0
 
@@ -512,11 +489,11 @@ for d= 1:e
 
 
                
-                %rec_xr(:,:,j)= x_r;
-               % rec_bound_r(:,:,j)= bound_r;
-                %rec_bound_l(:,:,j)= bound_l;
+                rec_xr(:,:,j)= x_r;
+                rec_bound_r(:,:,j)= bound_r;
+                rec_bound_l(:,:,j)= bound_l;
                 rec_dxr(:,j) = dxr;
-               % rec_xl(:,:,j)= x_l;
+                rec_xl(:,:,j)= x_l;
                 rec_dxl(:,j) = dxl;
                 rec_state(:,j) = state;
 
@@ -556,10 +533,7 @@ for d= 1:e
                 break;
             end
 
-              
-            
-
-
+ 
         end
         fname = sprintf('laner%d_lanel%d_Nr%dNl%d_%.1f_%d.mat', Nlane_r, Nlane_l, Nr, Nl, k, round);
         save(fname)
