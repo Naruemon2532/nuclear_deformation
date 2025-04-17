@@ -1,12 +1,13 @@
 clear; clc; % nonprocessive kinesin - 1
+% run with cal_v_lim_Bi.m
 % sometime if one motor bound and perform a step before new binding  then
 % the simulation can stop
 tic
 threshold = 10^-5;  % consider 10^-4 as absolute 0 for V of cargo;
-nrun=90;
+nrun=100;
 
 
-Num_lane=100;%[1,20,40,60,80,100];  % no. of left lane
+Num_lane=[1,20,40,60,80,100];  % no. of left lane
 [w,e]=size(Num_lane);
 Nr =10; % no. of right lane
 Nl =10; % no. of left lane
@@ -28,7 +29,7 @@ for d= 1:e
 
     Nlane_l = Num_lane(d);
     Nlane_r = Num_lane(d);
-    M_r=20*Nlane_r;   % the initial number of binding sites on each side
+    M_r=20*Nlane_r;   % the total number of binding sites on each side
     M_l=20*Nlane_l; 
     Vr0= cal_v_lim_Bi(Nr,M,0,kon,koff,p,q,delta)*step_size; % velocity on each lane
     Vl0= cal_v_lim_Bi(Nl,M,0,kon,koff,p,q,delta)*step_size;
@@ -38,7 +39,7 @@ for d= 1:e
    % Vl0=cal_v_pro(Nl,0,p,q,delta)*step_size;
 
 
-    for round =82:nrun
+    for round =1:nrun
 
         t=0;
         nr=zeros(Nlane_r,1);
@@ -158,7 +159,7 @@ for d= 1:e
                     xr_lead=(xr_lead(~isnan(xr_lead)));
                     xr_lead_forward = xr_lead+1;
                     xr_lead_backward = xr_lead-1;
-                    xr_fol = differ(xr_all,xr_lead);
+                    xr_fol = setdiff(xr_all,xr_lead,'stable');
                     xr_fol_forward = xr_fol+1;
                     xr_fol_backward = xr_fol-1;
                 end
@@ -171,10 +172,10 @@ for d= 1:e
                 end
                 
                
-                [xr_lead_p,kr_lead_fore] = differ(xr_lead_forward,xr_all);
-                [xr_lead_b,kr_lead_back] = differ(xr_lead_backward,xr_all);
-                [xr_fol_p,kr_fol_fore] = differ(xr_fol_forward,xr_all);
-                [xr_fol_b,kr_fol_back] = differ(xr_fol_backward,xr_all);
+                [xr_lead_p,kr_lead_fore] = setdiff(xr_lead_forward,xr_all,'stable');
+                [xr_lead_b,kr_lead_back] = setdiff(xr_lead_backward,xr_all,'stable');
+                [xr_fol_p,kr_fol_fore] = setdiff(xr_fol_forward,xr_all,'stable');
+                [xr_fol_b,kr_fol_back] = setdiff(xr_fol_backward,xr_all,'stable');
 
                 %left team
                 if all(x_l==0)
@@ -191,7 +192,7 @@ for d= 1:e
                     xl_lead=(xl_lead(~isnan(xl_lead)));
                     xl_lead_forward = xl_lead-1;
                     xl_lead_backward = xl_lead+1;
-                    xl_fol = differ(xl_all,xl_lead);
+                    xl_fol = setdiff(xl_all,xl_lead,'stable');
                     xl_fol_forward = xl_fol-1;
                     xl_fol_backward = xl_fol+1;
                 end
@@ -204,10 +205,10 @@ for d= 1:e
                 end
 
 
-                [xl_lead_p,kl_lead_fore] = differ(xl_lead_forward,xl_all);
-                [xl_lead_b,kl_lead_back] = differ(xl_lead_backward,xl_all);
-                [xl_fol_p,kl_fol_fore] = differ(xl_fol_forward,xl_all);
-                [xl_fol_b,kl_fol_back] = differ(xl_fol_backward,xl_all);
+                [xl_lead_p,kl_lead_fore] = setdiff(xl_lead_forward,xl_all,'stable');
+                [xl_lead_b,kl_lead_back] = setdiff(xl_lead_backward,xl_all,'stable');
+                [xl_fol_p,kl_fol_fore] = setdiff(xl_fol_forward,xl_all,'stable');
+                [xl_fol_b,kl_fol_back] = setdiff(xl_fol_backward,xl_all,'stable');
 
                 if isempty(kr_lead_fore)
                     aa(1)=0;
